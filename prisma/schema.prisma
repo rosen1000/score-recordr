@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id           Int         @id @default(autoincrement())
+  name         String      @unique
+  minPlayers   Int
+  maxPlayers   Int
+  playerColors String
+  pointsName   String
+  GameEntry    GameEntry[]
+
+  @@map("Game")
+}
+
+model GameEntry {
+  id          Int      @id @default(autoincrement())
+  game        Game     @relation(fields: [gameId], references: [id])
+  gameId      Int
+  timeCreated DateTime @default(now())
+  scores      Score[]
+}
+
+model Score {
+  id          Int        @id @default(autoincrement())
+  score       Int
+  player      Player     @relation(fields: [playerId], references: [id])
+  playerId    Int
+  GameEntry   GameEntry? @relation(fields: [gameEntryId], references: [id])
+  gameEntryId Int?
+  color       String
+  won         Boolean?
+}
+
+model Player {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  Score Score[]
+}
